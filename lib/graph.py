@@ -46,8 +46,8 @@ driver = GraphDatabase.driver(uri, auth=("neo4j", "admin@123"), encrypted=False)
 def job_node(job):
     # graph = create_conn()
     graph = driver.session()
-    create_job = "MERGE (j:JOB{job_link:$job_link, date: $date, tags: $tags}) RETURN j"
-    res = graph.run(create_job, job_link = job['job_link'], date = job['date'], tags = job['tags']).data()
+    create_job = "MERGE (j:JOB{job_link:$job_link, date: $date, tags: $tags, title: $title}) RETURN j"
+    res = graph.run(create_job, job_link = job['job_link'], date = job['date'], tags = job['tags'], title = job['title']).data()
     graph.close()
     return res
 
