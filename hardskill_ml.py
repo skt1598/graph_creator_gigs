@@ -62,7 +62,7 @@ try:
 
 
     channel.basic_consume(
-        queue='hardskill_ml', on_message_callback=callback, auto_ack=False)
+        queue='hardskill_ml', on_message_callback=callback, auto_ack=True)
     # channel.basic_consume(callback, 'remotive_html_parse',  no_ack=False)
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
@@ -72,4 +72,4 @@ except Exception as e:
         "status": "Error occured during hardskill ml processing !!",
         "errorMsg": e
     }
-    print("Error: ",e)
+    print("Error: ",error)

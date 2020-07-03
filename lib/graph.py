@@ -40,7 +40,7 @@ relation_type = {
 #     graph = driver.session()
 #     return graph
 
-uri = "bolt://localhost:11003"
+uri = os.getenv("GRAPH_URI")
 driver = GraphDatabase.driver(uri, auth=("neo4j", "admin@123"), encrypted=False)
 
 def job_node(job):
