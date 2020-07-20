@@ -22,7 +22,7 @@ def fetch_tags():
         # print(str(date))
         for source in json.loads(os.getenv('GIGS_SOURCE')):
             print('\n\n\nsource::', source)
-            jobs = coll.find({'source': source}, no_cursor_timeout=True).sort('date', -1).limit(20)
+            jobs = coll.find({'source': source}, no_cursor_timeout=True).sort('date', -1).limit(int(os.getenv("JOB_LIMIT_FOR_TAGGING")))
 
             # RabbitMq connection
             connection = rabbit_mq.create_connection()
