@@ -150,11 +150,11 @@ def fetch_tags():
 
 fetch_tags()
 
-# #schedule.every().day.at("08:00").do(fetch_tags)
+schedule.every().day.at("08:00").do(fetch_tags)
 # schedule.every(10).seconds.do(fetch_tags) 
 
-# while True: 
-#     # Checks whether a scheduled task  
-#     # is pending to run or not 
-#     schedule.run_pending() 
-#     time.sleep(1) 
+while True: 
+    # Checks whether a scheduled task  
+    # is pending to run or not 
+    schedule.run_pending() 
+    time.sleep(1) 
