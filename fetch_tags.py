@@ -148,7 +148,7 @@ def fetch_tags():
         }
         print("Error: ",error)
 
-fetch_tags()
+# fetch_tags()
 
 schedule.every().day.at("08:00").do(fetch_tags)
 # schedule.every(10).seconds.do(fetch_tags) 

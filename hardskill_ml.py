@@ -29,7 +29,7 @@ try:
         if 'HARDSKILL' in tags.keys():
             for elem in tags['HARDSKILL']:
                 slug = '_'.join(elem.split()).lower()
-                print('slug::', slug)
+                print('\n\n\nslug::', slug)
                 obj = {
                     'job_id': job['job_id'],
                     "skill": slug,
@@ -57,7 +57,7 @@ try:
                     print("sub_domain::",sub_domain)
                     obj['sub_domain'] = list(sub_domain.keys())
 
-                print('\n\n\nobj::', obj)
+                print('obj::', obj)
                 channel.basic_publish(exchange='', routing_key='hardskill_node_rel', body=json.dumps(obj))
 
 

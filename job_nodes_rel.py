@@ -38,9 +38,9 @@ try:
             for skill in job['skills']:
                 if skill not in tags['HARDSKILL']:
                     tags['HARDSKILL'].append(skill)
-            tags = str(dict(tags))
-            job['tags'] = tags
-            print('after tags manipulation::',job)
+        tags = str(dict(tags))
+        job['tags'] = tags
+        print('after tags manipulation::',job)
 
         job_res = graph.job_node(job)
         # print('\njob_res::', job_res)
