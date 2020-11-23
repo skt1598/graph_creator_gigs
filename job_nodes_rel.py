@@ -23,7 +23,7 @@ try:
         global count
         count += 1
         print("count::", count)
-        # # print(" [x] Received %r" % body)
+        # print(" [x] Received %r" % body)
         job = json.loads(body)
         spacy_tags = job['tags']
 

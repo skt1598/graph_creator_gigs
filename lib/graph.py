@@ -46,8 +46,8 @@ driver = GraphDatabase.driver(uri, auth=("neo4j", "admin@123"), encrypted=False)
 def job_node(job):
     # graph = create_conn()
     graph = driver.session()
-    create_job = "MERGE (j:JOB{job_link:$job_link, date: $date, tags: $tags, title: $title}) RETURN j"
-    res = graph.run(create_job, job_link = job['job_link'], date = job['date'], tags = job['tags'], title = job['title']).data()
+    create_job = "MERGE (j:JOB{job_link:$job_link, date: $date, tags: $tags, title: $title, crawled_domain: $crawled_domain, source: $source}) RETURN j"
+    res = graph.run(create_job, job_link = job['job_link'], date = job['date'], tags = job['tags'], title = job['title'], crawled_domain = job['domain'], source = job['source']).data()
     graph.close()
     return res
 
@@ -102,4 +102,48 @@ def sub_domain_node_rel(body):
     }
     create_sub_domin = "MATCH (j:JOB) WHERE id(j) = $job_id MATCH (n: HARDSKILL) WHERE n.slug = $skill_slug MERGE (d: DOMAIN{slug: $slug, display_val: $display_val}) MERGE (n) - [r:BELONGS_TO] -> (d) MERGE (j) - [z:BELONGS_TO] -> (d) RETURN n,r,d,z,j"
     res = graph.run(create_sub_domin, job_id = body['job_id'], skill_slug = body['skill'], slug = obj['slug'], display_val = obj['display_val']).data()
+    return res
+
+def domain_personality_rel(body):
+    graph = driver.session()
+    obj = {
+        "domain_adaptiv_id": body['domain'].lower(),
+        "domain_display_val": ' '.join(body['domain'].split('_')).title(),
+        "personality_adaptiv_id": body['personality'].lower(),
+        "personality_type": ' '.join(body['personality'].split('_')).title()
+    }
+    create_domain_personality_rel = "MERGE (d: DOMAIN{adaptiv_id: $domain_adaptiv_id}) set d = {adaptiv_id: $domain_adaptiv_id, display_val: $domain_display_val} MERGE (p: PERSONALITY{adaptiv_id: $personality_adaptiv_id, type: $personality_type}) MERGE (p) - [r:REQUIRES] -> (d) RETURN p, r, d"
+    res = graph.run(create_domain_personality_rel, domain_adaptiv_id = obj['domain_adaptiv_id'], domain_display_val = obj['domain_display_val'], personality_adaptiv_id = obj['personality_adaptiv_id'], personality_type = obj['personality_type']).data()
+    return res
+
+def course_node(body):
+    graph = driver.session()
+    obj = {
+        "title": body['title'],
+        "courseUrl": body['courseUrl']
+    }
+    create_course = "MERGE (c: COURSE{course_url: $courseUrl}) SET c = {course_url: $courseUrl, title: $title, type: $type} RETURN c"
+    res = graph.run(create_course, title = body['title'], type = body['type'], courseUrl = body['courseUrl']).data()
+    graph.close()
+    return res
+
+def course_domain_rel(body):
+    graph = driver.session()
+    obj = {
+        "domain_adaptiv_id": body['domain'].lower(),
+        "domain_display_val": ' '.join(body['domain'].split('_')).title()
+    }
+    create_domain_course_rel = "MATCH (c:COURSE) WHERE id(c) = $course_id MERGE (d: DOMAIN{adaptiv_id: $domain_adaptiv_id, display_val: $domain_display_val}) MERGE (c) - [r:REQUIRES] -> (d) RETURN c, r, d"
+    res = graph.run(create_domain_course_rel, course_id = body['course_id'], domain_adaptiv_id = obj['domain_adaptiv_id'], domain_display_val = obj['domain_display_val']).data()
+    return res
+
+def course_domain_level_rel(body):
+    graph = driver.session()
+    obj = {
+        "common_name": body['level'],
+        "proper_name": '_'.join(body['level'].split()).lower(),
+        "adaptiv_id": '_'.join(body['level'].split()).lower()
+    }
+    create_course_level_rel = "MATCH (c:COURSE) WHERE id(c) = $course_id MATCH (d:DOMAIN) WHERE id(d) = $domain_id MERGE (l: LEVEL{adaptiv_id: $adaptiv_id, common_name: $common_name, proper_name: $proper_name, description: ''}) MERGE (c) - [h:HAS] -> (l) MERGE (l) - [r:requires] -> (d) RETURN c,h,l,r,d"
+    res = graph.run(create_course_level_rel, course_id = body['course_id'], domain_id = body['domain_id'], common_name = body['level'], proper_name = obj['proper_name'], adaptiv_id = obj['adaptiv_id']).data()
     return res
